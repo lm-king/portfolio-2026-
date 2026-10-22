@@ -63,7 +63,7 @@
   }
   .hero-bg{
     position:absolute;inset:0;
-    background:url('https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2200&q=80') center/cover no-repeat;
+    background:url('images/1.jpg') center/cover no-repeat;
     filter:brightness(.55) saturate(.6);
     transform:scale(1.08);
     animation:heroZoom 14s ease-out forwards;
@@ -155,29 +155,49 @@
   }
   .skill-list li.active span{color:#ffffff}
 
-  /* 技能详情面板 */
-  .skill-panel{position:relative}
-  .skill-panel-inner{transition:opacity .5s ease,transform .5s cubic-bezier(.22,1,.36,1)}
-  .skill-panel-inner.switching{opacity:0;transform:translateY(20px)}
   .panel-tag{font-size:10px;letter-spacing:.45em;color:var(--ink-faint);text-transform:uppercase}
-  .panel-title{font-family:var(--serif);font-size:clamp(28px,3.4vw,40px);font-weight:500;margin-top:12px;line-height:1.25}
-  .panel-desc{margin-top:18px;font-size:14px;font-weight:400;color:var(--ink-dim);line-height:2.1;letter-spacing:.06em}
-  .panel-grid{margin-top:32px;display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-  .panel-grid figure{position:relative;overflow:hidden;aspect-ratio:1/1}
-  .panel-grid img{
+
+  /* 关于页右侧整张大图 */
+  .about-img{position:relative;overflow:hidden;aspect-ratio:4/5}
+  .about-img img{
     width:100%;height:100%;object-fit:cover;
-    filter:brightness(.72) saturate(.55);
+    filter:brightness(.78) saturate(.6);
+    transition:transform 1.4s cubic-bezier(.22,1,.36,1),filter .8s;
+  }
+  .about-img:hover img{transform:scale(1.04);filter:brightness(.95) saturate(.75)}
+  .about-img .frame{
+    position:absolute;inset:18px;border:1px solid rgba(232,230,225,.28);
+    pointer-events:none;
+  }
+  .about-img figcaption{
+    position:absolute;bottom:26px;left:32px;
+    font-size:11px;letter-spacing:.35em;color:#ffffff;text-transform:uppercase;
+  }
+
+  /* 弹窗内的多图网格（技能弹窗） */
+  .modal-grid{
+    padding:64px 44px;overflow-y:auto;max-height:88vh;
+    display:grid;grid-template-columns:repeat(2,1fr);gap:18px;align-content:start;
+  }
+  .modal-grid figure{position:relative;overflow:hidden;aspect-ratio:4/3;cursor:zoom-in}
+  .modal-grid img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    filter:brightness(.76) saturate(.6);
     transition:transform 1.2s cubic-bezier(.22,1,.36,1),filter .6s;
   }
-  .panel-grid figure:hover img{transform:scale(1.07);filter:brightness(.95) saturate(.72)}
-  .panel-grid figcaption{
+  .modal-grid figure:hover img{transform:scale(1.06);filter:brightness(1) saturate(.75)}
+  .modal-grid figcaption{
     position:absolute;left:0;right:0;bottom:0;padding:16px 18px;
-    background:linear-gradient(to top,rgba(5,5,5,.94),rgba(5,5,5,0));
-    font-size:11px;font-weight:400;letter-spacing:.16em;color:#ffffff;line-height:1.7;
+    background:linear-gradient(to top,rgba(5,5,5,.95),rgba(5,5,5,0));
+    font-size:12px;font-weight:400;letter-spacing:.12em;color:#ffffff;line-height:1.8;
     opacity:0;transform:translateY(12px);
     transition:opacity .45s ease,transform .45s cubic-bezier(.22,1,.36,1);
   }
-  .panel-grid figure:hover figcaption{opacity:1;transform:translateY(0)}
+  .modal-grid figure:hover figcaption{opacity:1;transform:translateY(0)}
+  .modal-grid figcaption i{
+    display:block;font-family:var(--serif);font-size:11px;font-style:italic;
+    letter-spacing:.28em;color:var(--ink-faint);margin-bottom:4px;
+  }
 
   /* ---------- Work ---------- */
   .work-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px}
@@ -237,7 +257,7 @@
   .video-sec .sec-label{margin-top:0}
   .player{
     margin:64px auto 0;max-width:920px;aspect-ratio:16/9;
-    background:#050505 url('https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1600&q=70') center/cover;
+    background:#050505 url('images/5.jpg') center/cover;
     background-blend-mode:multiply;
     border:1px solid var(--line);
     display:flex;align-items:center;justify-content:center;
@@ -368,7 +388,7 @@
     overflow-y:auto;max-height:88vh;
     display:flex;flex-direction:column;gap:22px;
   }
-  .work-gallery figure{position:relative;overflow:hidden;flex:0 0 auto;aspect-ratio:16/10}
+  .work-gallery figure{position:relative;overflow:hidden;flex:0 0 auto;aspect-ratio:16/10;cursor:zoom-in}
   .work-gallery img{
     width:100%;height:100%;object-fit:cover;display:block;
     filter:brightness(.72) saturate(.55);
@@ -395,13 +415,93 @@
   }
   body.modal-lock{overflow:hidden}
 
+  /* ---------- 图片灯箱 Lightbox ---------- */
+  .lightbox{
+    position:fixed;inset:0;z-index:300;
+    display:flex;align-items:center;justify-content:center;padding:48px 24px;
+    background:rgba(3,3,3,.96);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    opacity:0;visibility:hidden;
+    transition:opacity .4s ease,visibility .4s ease;
+  }
+  .lightbox.open{opacity:1;visibility:visible}
+  .lb-figure{
+    display:flex;flex-direction:column;align-items:center;gap:22px;
+    max-width:1000px;width:100%;
+    transform:scale(.88);opacity:0;
+    transition:transform .6s cubic-bezier(.22,1,.36,1),opacity .5s ease;
+  }
+  .lightbox.open .lb-figure{transform:scale(1);opacity:1}
+  .lb-figure img{
+    max-width:100%;max-height:64vh;width:auto;height:auto;object-fit:contain;
+    border:1px solid var(--line);
+    filter:brightness(.95) saturate(.72);
+  }
+  .lb-info{text-align:center;max-width:620px}
+  .lb-info .lb-sub{
+    font-family:var(--serif);font-style:italic;font-size:12px;
+    letter-spacing:.34em;color:var(--ink-faint);text-transform:uppercase;
+  }
+  .lb-info .lb-title{
+    margin-top:10px;font-family:var(--serif);font-size:clamp(22px,3vw,32px);
+    font-weight:500;color:#ffffff;line-height:1.35;
+  }
+  .lb-info .lb-note{
+    margin-top:12px;font-size:14px;font-weight:400;color:var(--ink-dim);
+    line-height:2.05;letter-spacing:.06em;
+  }
+  .lightbox .lb-close{
+    position:absolute;top:22px;right:26px;z-index:10;
+    width:44px;height:44px;background:none;border:1px solid transparent;
+    color:var(--ink-dim);font-size:24px;line-height:1;cursor:pointer;
+    transition:color .3s,transform .4s,border-color .3s;
+  }
+  .lightbox .lb-close:hover{color:#fff;border-color:var(--line);transform:rotate(90deg)}
+
+  /* ---------- 影像页 · 空间摄影网格 ---------- */
+  .space-head{margin-top:96px}
+  .space-title{
+    font-family:var(--serif);font-weight:500;
+    font-size:clamp(20px,2.6vw,32px);letter-spacing:.32em;text-transform:uppercase;
+  }
+  .space-sub{
+    margin-top:12px;font-size:11px;font-weight:400;letter-spacing:.4em;
+    color:var(--ink-faint);text-transform:uppercase;
+  }
+  .photo-grid{
+    margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
+  }
+  .photo-grid figure{position:relative;overflow:hidden;aspect-ratio:3/2;cursor:zoom-in}
+  .photo-grid img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    filter:brightness(.72) saturate(.55);
+    transition:transform 1.2s cubic-bezier(.22,1,.36,1),filter .6s;
+  }
+  .photo-grid figure:hover img{transform:scale(1.07);filter:brightness(1) saturate(.72)}
+  .photo-grid figcaption{
+    position:absolute;left:0;right:0;bottom:0;padding:14px 16px;
+    background:linear-gradient(to top,rgba(5,5,5,.95),rgba(5,5,5,0));
+    font-size:11px;font-weight:400;letter-spacing:.16em;color:#ffffff;line-height:1.7;
+    opacity:0;transform:translateY(10px);
+    transition:opacity .45s ease,transform .45s cubic-bezier(.22,1,.36,1);
+  }
+  .photo-grid figure:hover figcaption{opacity:1;transform:translateY(0)}
+
+  /* ---------- 下载提示 ---------- */
+  .dl-hint{
+    margin-top:20px;font-size:10px;font-weight:400;letter-spacing:.22em;
+    color:var(--ink-faint);line-height:1.9;text-align:center;
+  }
+
   /* ---------- Responsive ---------- */
   @media(max-width:960px){
     .about-grid{grid-template-columns:1fr;gap:56px}
-    .panel-grid{max-width:520px}
+    .about-img{max-width:520px}
     .work-box{grid-template-columns:1fr;max-height:92vh;overflow-y:auto}
     .work-info{padding:56px 32px 20px;overflow:visible}
     .work-gallery{padding:0 32px 48px;max-height:none;overflow:visible}
+    .modal-grid{padding:0 32px 48px;max-height:none;overflow:visible}
+    .photo-grid{grid-template-columns:repeat(2,1fr)}
   }
   @media(max-width:768px){
     nav{padding:20px 24px}
@@ -415,7 +515,9 @@
     .modal{padding:0}
     .work-box{max-height:100vh;height:100%;border:none}
     .modal-box{padding:44px 28px}
-    .panel-grid{grid-template-columns:1fr}
+    .modal-grid{grid-template-columns:1fr}
+    .lightbox{padding:24px 16px}
+    .lb-figure img{max-height:56vh}
   }
 </style>
 </head>
@@ -457,9 +559,11 @@
       <!-- 技能列表由 JS 依据 skills 数据渲染 -->
       <ul class="skill-list" id="skillList"></ul>
     </div>
-    <div class="skill-panel reveal" data-delay="2">
-      <div class="skill-panel-inner" id="skillPanel"></div>
-    </div>
+    <figure class="about-img reveal" data-delay="2">
+      <img src="images/3.jpg" alt="光影空间">
+      <span class="frame"></span>
+      <figcaption>Light &amp; Space</figcaption>
+    </figure>
   </div>
 </section>
 
@@ -492,6 +596,13 @@
     <span class="timecode">00:00 / 02:36</span>
   </div>
   <p class="video-note reveal" data-delay="3"><em>AI 短片嵌入播放</em> ／ 展厅大屏循环影像</p>
+
+  <div class="space-head reveal">
+    <h3 class="space-title">Space Photography</h3>
+    <p class="space-sub">空间纪实 · 点击放大</p>
+  </div>
+  <!-- 缩略图由 JS 依据 PHOTOS 数据渲染 -->
+  <div class="photo-grid reveal" id="photoGrid"></div>
 </section>
 
 <!-- ======= CONTACT ======= -->
@@ -500,9 +611,12 @@
   <h2 class="big-name reveal" data-delay="1">感谢 <em>观看。</em></h2>
   <div class="rule" style="margin:32px auto 0"></div>
   <a class="email reveal" data-delay="2" href="mailto:hello@example.com">hello@example.com</a>
-  <div class="btn-row reveal" data-delay="2">
-    <a class="btn" href="#" download><span>下载作品集 PDF</span></a>
-    <button class="btn ghost" id="open-copyright"><span>版权信息</span></button>
+  <div class="reveal" data-delay="2">
+    <div class="btn-row">
+      <a class="btn" href="./portfolio.pdf" download="portfolio.pdf"><span>下载作品集 PDF</span></a>
+      <button class="btn ghost" id="open-copyright"><span>版权信息</span></button>
+    </div>
+    <p class="dl-hint">若文件未自动下载，请右键点击并选择“链接另存为”</p>
   </div>
   <p class="copyright reveal" data-delay="3">© 2026 Portfolio · All Rights Reserved</p>
 </section>
@@ -511,6 +625,20 @@
   <span>Portfolio — Exhibition &amp; Visual</span>
   <span>Designed in the Dark · 2026</span>
 </footer>
+
+<!-- ======= 技能详情弹窗 ======= -->
+<div class="modal" id="skillModal">
+  <div class="work-box">
+    <button class="modal-close" id="closeSkill" aria-label="关闭">×</button>
+    <aside class="work-info">
+      <p class="panel-tag" id="skTag"></p>
+      <h3 id="skTitle"></h3>
+      <div class="work-divider"></div>
+      <p class="work-long" id="skDesc"></p>
+    </aside>
+    <div class="modal-grid" id="skGrid"></div>
+  </div>
+</div>
 
 <!-- ======= 作品详情弹窗 ======= -->
 <div class="modal" id="workModal">
@@ -527,6 +655,19 @@
   </div>
 </div>
 
+<!-- ======= 图片灯箱 ======= -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="closeLightbox" aria-label="关闭">×</button>
+  <div class="lb-figure">
+    <img id="lbImg" src="" alt="">
+    <div class="lb-info">
+      <p class="lb-sub" id="lbSub"></p>
+      <p class="lb-title" id="lbTitle"></p>
+      <p class="lb-note" id="lbNote"></p>
+    </div>
+  </div>
+</div>
+
 <!-- ======= 版权弹窗 ======= -->
 <div class="modal" id="modal">
   <div class="modal-box">
@@ -538,20 +679,9 @@
 </div>
 
 <script>
-/* ========== 图片占位工具（替换为自己的图片路径即可） ========== */
-const IMG = {
-  a:'1519681393784-d120267933ba',
-  b:'1494438639946-1ebd1d20bf85',
-  c:'1517604931442-7e0c8ed2963c',
-  d:'1581078426770-6d336e5de7bf',
-  e:'1531482615713-2afd69097998',
-  f:'1500634245200-e5245c7574ef',
-  g:'1478720568477-152d9b164e26',
-  h:'1470071459604-3b5ec3a7fe05',
-  i:'1504384308090-c894fdcc538d',
-  j:'1493246507139-91e8fad9978e'
-};
-const u = (key,w=1400)=>`https://images.unsplash.com/photo-${IMG[key]}?auto=format&fit=crop&w=${w}&q=80`;
+/* ========== 本地图片（images/1.jpg ~ images/5.jpg） ==========
+   u(1) → images/1.jpg …… 想换图直接改这里的文件名即可 */
+const u = n => `images/${n}.jpg`;
 
 /* ========== 数据一：关于页 6 个技能（Tab） ==========
    替换说明：title 标题 / desc 简介 / images 组图（src 图片、cap 说明、sub 英文小标） */
@@ -561,10 +691,10 @@ const SKILLS = [
     title:'展陈装置与三维建模',
     desc:'从概念草图到三维落地，完成装置的形态推演、材质测试与空间尺度校核，输出可直接交付施工的渲染图与技术图纸。',
     images:[
-      {src:u('c'), cap:'主装置体块推演', sub:'Concept Model'},
-      {src:u('h'), cap:'空间尺度与人流动线', sub:'Scale Study'},
-      {src:u('b'), cap:'材质与光影测试', sub:'Material Test'},
-      {src:u('j'), cap:'现场搭建实景', sub:'On Site'}
+      {src:u(2), cap:'主装置体块推演', sub:'Concept Model', note:'确认了空间中最核心的视觉焦点。三组体块以不同高度悬垂，让观众的行走自然形成停顿节奏。'},
+      {src:u(3), cap:'空间尺度与人流动线', sub:'Scale Study', note:'以 1:50 的比例反复校核通道宽度，保证两人并行时不产生拥挤感。'},
+      {src:u(4), cap:'材质与光影测试', sub:'Material Test', note:'对比了五种板材的透光率，最终选择半透亚克力，让装置在暗场中自带微弱内发光。'},
+      {src:u(5), cap:'现场搭建实景', sub:'On Site', note:'两天搭建完成，实际效果与渲染图的误差控制在 3% 以内。'}
     ]
   },
   {
@@ -572,10 +702,10 @@ const SKILLS = [
     title:'展览平面物料',
     desc:'建立统一的视觉识别系统：字体、栅格、图像处理方式一以贯之，覆盖海报、画册、导览手册与票务物料的完整编辑设计。',
     images:[
-      {src:u('d'), cap:'主视觉海报系列', sub:'Poster Series'},
-      {src:u('i'), cap:'宣传册版式设计', sub:'Brochure'},
-      {src:u('f'), cap:'导览手册内页', sub:'Guidebook'},
-      {src:u('a'), cap:'物料延展与输出', sub:'Print'}
+      {src:u(3), cap:'主视觉海报系列', sub:'Poster Series', note:'三款海报共用同一套轮廓语汇，通过留白比例区分主次，远看是一组，近看各有性格。'},
+      {src:u(4), cap:'宣传册版式设计', sub:'Brochure', note:'24 页的编辑逻辑：每四页一个呼吸节点，让图文密度始终保持可读。'},
+      {src:u(5), cap:'导览手册内页', sub:'Guidebook', note:'以 12 栏栅格承载导览信息，观众单手持有时也能顺畅阅读。'},
+      {src:u(1), cap:'物料延展与输出', sub:'Print', note:'选用 120g 本白纸与单色专色印刷，在控制成本的同时保留纸感。'}
     ]
   },
   {
@@ -583,9 +713,9 @@ const SKILLS = [
     title:'展会配套产品',
     desc:'围绕展览主题开发衍生品与功能物件，兼顾量产工艺与成本控制，让观众把展览记忆带回家。',
     images:[
-      {src:u('e'), cap:'衍生产品概念稿', sub:'Concept'},
-      {src:u('j'), cap:'打样与工艺确认', sub:'Prototype'},
-      {src:u('b'), cap:'成品陈列效果', sub:'Final'}
+      {src:u(4), cap:'衍生产品概念稿', sub:'Concept', note:'从门票、徽章到限定印刷品，统一在展览的色彩与材质语言之内。'},
+      {src:u(5), cap:'打样与工艺确认', sub:'Prototype', note:'打样三轮后确定表面处理工艺，单件成本压缩到预算线以内。'},
+      {src:u(1), cap:'成品陈列效果', sub:'Final', note:'成品与展陈空间保持同一材质逻辑，观众可以把展览记忆带回家。'}
     ]
   },
   {
@@ -593,10 +723,10 @@ const SKILLS = [
     title:'展厅触控交互界面',
     desc:'为大屏与触摸终端设计信息架构与界面：低干扰的暗色 UI、清晰的层级、可远程维护的内容后台。',
     images:[
-      {src:u('i'), cap:'首页导航界面', sub:'Home'},
-      {src:u('e'), cap:'作品详情页', sub:'Detail'},
-      {src:u('c'), cap:'时间轴导览', sub:'Timeline'},
-      {src:u('h'), cap:'现场触控终端', sub:'Kiosk'}
+      {src:u(5), cap:'首页导航界面', sub:'Home', note:'暗色低干扰界面，入口控制在三个以内，观众三秒内即可做出选择。'},
+      {src:u(1), cap:'作品详情页', sub:'Detail', note:'大字号远距离可读性，站在两米外也能看清标题层级。'},
+      {src:u(2), cap:'时间轴导览', sub:'Timeline', note:'以横向时间轴串联展览线索，滑动手感按指尖尺度调校。'},
+      {src:u(3), cap:'现场触控终端', sub:'Kiosk', note:'按钮热区全部落在单手可达范围，并配有内容后台便于运营方自行替换。'}
     ]
   },
   {
@@ -604,9 +734,9 @@ const SKILLS = [
     title:'AI 影像短片',
     desc:'以 AI 生成与实拍素材混合编排，完成分镜、节奏与配乐的整体把控，输出适配展厅大屏的循环版本。',
     images:[
-      {src:u('g'), cap:'分镜与镜头设计', sub:'Storyboard'},
-      {src:u('a'), cap:'生成画面调试', sub:'AI Frame'},
-      {src:u('c'), cap:'大屏循环版本', sub:'Loop'}
+      {src:u(1), cap:'分镜与镜头设计', sub:'Storyboard', note:'两分半的时长内完成一次完整的情绪起落，共 18 个镜头。'},
+      {src:u(2), cap:'生成画面调试', sub:'AI Frame', note:'生成画面与实拍素材交叉剪辑，统一压暗后保留颗粒感。'},
+      {src:u(3), cap:'大屏循环版本', sub:'Loop', note:'做了首尾无缝处理，可在展厅大屏上长时间循环播放。'}
     ]
   },
   {
@@ -614,10 +744,10 @@ const SKILLS = [
     title:'空间纪实摄影',
     desc:'记录布展过程与开展现场，用克制的镜头语言还原空间秩序，为展览留下可复用的档案影像。',
     images:[
-      {src:u('f'), cap:'布展过程记录', sub:'Process'},
-      {src:u('h'), cap:'开展现场纪实', sub:'Opening'},
-      {src:u('b'), cap:'空间细节特写', sub:'Detail'},
-      {src:u('j'), cap:'档案影像整理', sub:'Archive'}
+      {src:u(2), cap:'布展过程记录', sub:'Process', note:'尽量不干预现场，用自然光记录装置被逐一组装的过程。'},
+      {src:u(3), cap:'开展现场纪实', sub:'Opening', note:'克制、冷静的镜头语言，还原空间原本的秩序感。'},
+      {src:u(4), cap:'空间细节特写', sub:'Detail', note:'聚焦于材料接缝与反光，这些细节在成品图中常被忽略。'},
+      {src:u(5), cap:'档案影像整理', sub:'Archive', note:'按时间、空间、物件三条线索归档，便于后续复用。'}
     ]
   }
 ];
@@ -626,53 +756,64 @@ const SKILLS = [
    替换说明：long 为弹窗中的长介绍，facts 为右侧信息条，gallery 为可上下滑动的组图 */
 const PROJECTS = [
   {
-    num:'I.', tag:'01 / 04', core:true, cover:u('c'),
+    num:'I.', tag:'01 / 04', core:true, cover:u(1),
     title:'展陈装置与三维建模', en:'Installation', year:'2024 — 01', role:'概念 · 建模 · 渲染',
     desc:'装置概念 · 空间推演 · 渲染表现',
     long:'这是整部作品集中的核心项目。展览以“光的容器”为题，在一个不足 120 平方米的临时空间中，用三组体量不同的悬挂装置重构观众的行走节奏。\n\n设计从手绘草图开始，先在三维空间里反复推演体块关系与人流动线，再通过材质小样确认透光率与反射强度。最终交付物包含完整的效果图、节点大样图与现场施工说明，确保装置在有限的搭建周期内精确落地。',
     gallery:[
-      {src:u('c',1600), cap:'主装置体块推演', sub:'Concept Model'},
-      {src:u('h',1600), cap:'空间尺度与人流动线校核', sub:'Scale & Circulation'},
-      {src:u('b',1600), cap:'材质透光与光影测试', sub:'Material Test'},
-      {src:u('j',1600), cap:'现场搭建完成后实景', sub:'On Site'}
+      {src:u(1), cap:'主装置体块推演', sub:'Concept Model', note:'确认了空间中最核心的视觉焦点，三组体块以不同高度悬垂。'},
+      {src:u(2), cap:'空间尺度与人流动线校核', sub:'Scale & Circulation', note:'以 1:50 比例校核通道宽度，保证两人并行时不产生拥挤感。'},
+      {src:u(3), cap:'材质透光与光影测试', sub:'Material Test', note:'五种板材透光率对比后选定半透亚克力，暗场中自带微弱内发光。'},
+      {src:u(4), cap:'现场搭建完成后实景', sub:'On Site', note:'两天搭建完成，实际效果与渲染图误差控制在 3% 以内。'}
     ]
   },
   {
-    num:'II.', tag:'02 / 04', core:false, cover:u('d'),
+    num:'II.', tag:'02 / 04', core:false, cover:u(2),
     title:'展览平面物料', en:'Graphic', year:'2024 — 03', role:'平面 · 编辑设计',
     desc:'海报系统 · 宣传册编辑设计',
     long:'为同一展览建立的完整平面系统。以一套统一的字体层级与栅格贯穿所有物料，让海报、宣传册与现场导视保持同一种语气。\n\n海报系列采用大幅留白与极窄字距，主视觉从装置本体的轮廓中抽取语汇；宣传册则以 24 页的编辑逻辑梳理策展文本、图像与图注的信息密度，兼顾阅读节奏与印刷成本。',
     gallery:[
-      {src:u('d',1600), cap:'主视觉海报系列（共 3 款）', sub:'Poster Series'},
-      {src:u('i',1600), cap:'宣传册跨页版式', sub:'Brochure Spread'},
-      {src:u('f',1600), cap:'导览手册内页栅格', sub:'Guidebook Grid'},
-      {src:u('a',1600), cap:'印刷样品与物料延展', sub:'Print & Merch'}
+      {src:u(2), cap:'主视觉海报系列（共 3 款）', sub:'Poster Series', note:'三款共用同一套轮廓语汇，靠留白比例区分主次，远看是一组，近看各有性格。'},
+      {src:u(3), cap:'宣传册跨页版式', sub:'Brochure Spread', note:'24 页的编辑逻辑：每四页一个呼吸节点，图文密度始终保持可读。'},
+      {src:u(4), cap:'导览手册内页栅格', sub:'Guidebook Grid', note:'12 栏栅格承载导览信息，单手持有时也能顺畅阅读。'},
+      {src:u(5), cap:'印刷样品与物料延展', sub:'Print & Merch', note:'120g 本白纸与单色专色印刷，控制成本的同时保留纸感。'}
     ]
   },
   {
-    num:'III.', tag:'03 / 04', core:false, cover:u('e'),
+    num:'III.', tag:'03 / 04', core:false, cover:u(3),
     title:'展会配套产品 + 展厅触控 UI', en:'Product / UI', year:'2023 — 11', role:'产品 · 交互设计',
     desc:'衍生产品 · 交互界面 · 导览体验',
     long:'涵盖两条并行的线索：一是展会的配套产品，二是现场的触控交互界面。\n\n产品部分从门票、徽章到限定印刷品，统一在展览的色彩与材质语言内，并充分考虑量产工艺与单件成本。UI 部分则针对展厅环境做了专门适配——暗色低干扰界面、大字号远距离可读性、单手可达的按钮热区，同时提供便于运营方自行替换的内容后台。',
     gallery:[
-      {src:u('e',1600), cap:'衍生产品概念与阵列', sub:'Product Line'},
-      {src:u('j',1600), cap:'打样与工艺确认', sub:'Prototype'},
-      {src:u('i',1600), cap:'触控终端首页界面', sub:'UI — Home'},
-      {src:u('h',1600), cap:'现场大屏交互实景', sub:'Kiosk'}
+      {src:u(3), cap:'衍生产品概念与阵列', sub:'Product Line', note:'从门票、徽章到限定印刷品，统一在展览的色彩与材质语言之内。'},
+      {src:u(4), cap:'打样与工艺确认', sub:'Prototype', note:'打样三轮后确定表面处理工艺，单件成本压缩到预算线以内。'},
+      {src:u(5), cap:'触控终端首页界面', sub:'UI — Home', note:'入口控制在三个以内，观众三秒内即可做出选择。'},
+      {src:u(1), cap:'现场大屏交互实景', sub:'Kiosk', note:'按钮热区落在单手可达范围，并配备内容后台便于自行替换。'}
     ]
   },
   {
-    num:'IV.', tag:'04 / 04', core:false, cover:u('f'),
+    num:'IV.', tag:'04 / 04', core:false, cover:u(4),
     title:'展厅影像 & 空间纪实摄影', en:'Film / Photo', year:'2023 — 09', role:'影像 · 摄影',
     desc:'大屏循环影像 · 空间纪录',
     long:'影像部分包含一支用于展厅大屏循环播放的短片，以及一组完整的空间纪实摄影。\n\n短片以 AI 生成的画面与实拍素材交叉编排，在两分半的时长内完成一次完整的情绪起落，并做了无缝循环的版本处理。摄影则聚焦于布展过程与开展当日：克制、冷静、尽量不干预现场，为展览留下可长期复用的档案素材。',
     gallery:[
-      {src:u('g',1600), cap:'大屏循环影像（静帧）', sub:'Film Still'},
-      {src:u('f',1600), cap:'布展过程纪实', sub:'Process'},
-      {src:u('b',1600), cap:'空间细节特写', sub:'Detail'},
-      {src:u('j',1600), cap:'开展现场', sub:'Opening'}
+      {src:u(4), cap:'大屏循环影像（静帧）', sub:'Film Still', note:'两分半的短片共 18 个镜头，在展厅大屏上无缝循环。'},
+      {src:u(5), cap:'布展过程纪实', sub:'Process', note:'尽量不干预现场，用自然光记录装置被逐一组装的过程。'},
+      {src:u(1), cap:'空间细节特写', sub:'Detail', note:'聚焦材料接缝与反光，这些细节在成品图中常被忽略。'},
+      {src:u(2), cap:'开展现场', sub:'Opening', note:'克制、冷静的镜头语言，还原空间原本的秩序感。'}
     ]
   }
+];
+
+/* ========== 数据三：影像页空间摄影缩略图（images/4、5 循环占位） ==========
+   替换说明：src 图片 / cap 图注 / sub 英文小标 / note 灯箱里的专属介绍 */
+const PHOTOS = [
+  {src:u(4), cap:'展厅入口 · 夜场', sub:'Entrance', note:'夜场时入口只留一盏低位灯，把观众从街道的亮度缓慢过渡到展厅的暗。'},
+  {src:u(5), cap:'主展区 · 光井', sub:'Light Well', note:'顶部的方形光井是唯一的自然光源，随时间在地面画出一条移动的光带。'},
+  {src:u(4), cap:'装置细节 · 接缝', sub:'Joint', note:'刻意保留的接缝痕迹，让装置看起来像是被使用过，而非刚出厂。'},
+  {src:u(5), cap:'休息区 · 长椅', sub:'Bench', note:'长椅的尺度按两人并坐设计，是整条动线中唯一的减速点。'},
+  {src:u(4), cap:'走廊 · 视线尽头', sub:'Corridor', note:'走廊尽头只放一件作品，用距离换取观看时的专注。'},
+  {src:u(5), cap:'撤展前 · 空场', sub:'Empty', note:'撤展前拍下的空场，空间重新回到最初的安静状态。'}
 ];
 
 /* ================= 渲染：展厅专页卡片 ================= */
@@ -702,33 +843,88 @@ SKILLS.forEach((s,i)=>{
   li.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();selectSkill(i);} });
   skillList.appendChild(li);
 });
+/* 默认高亮第一项（不自动打开弹窗） */
+skillList.querySelector('li[data-index="0"]').classList.add('active');
 
-/* ============ 技能 Tab 切换（平滑淡入） ============ */
-const panel = document.getElementById('skillPanel');
+/* ============ 通用工具：弹窗开关 + 页面滚动锁 ============ */
+function lockBody(on){ document.body.classList.toggle('modal-lock',on); }
+function anyModalOpen(){
+  return ['workModal','skillModal','modal'].some(id=>document.getElementById(id) && document.getElementById(id).classList.contains('open'));
+}
+
+/* ============ 图片灯箱 Lightbox（二级放大） ============ */
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lbImg');
+const lbSub = document.getElementById('lbSub');
+const lbTitle = document.getElementById('lbTitle');
+const lbNote = document.getElementById('lbNote');
+const LB = new Map();   // 容器 → 当前图片数据列表
+
+function openLightbox(item){
+  lbImg.src = item.src;
+  lbImg.alt = item.cap || '';
+  lbSub.textContent = item.sub || '';
+  lbTitle.textContent = item.cap || '';
+  lbNote.textContent = item.note || '';
+  lightbox.classList.add('open');
+  lockBody(true);
+}
+function closeLightbox(){
+  lightbox.classList.remove('open');
+  if(!anyModalOpen()) lockBody(false);
+}
+document.getElementById('closeLightbox').addEventListener('click',closeLightbox);
+lightbox.addEventListener('click',e=>{
+  if(e.target===lightbox || e.target.classList.contains('lb-figure')) closeLightbox();
+});
+
+/* 给任意图片容器绑定「点击放大」 */
+function bindLightbox(el){
+  el.addEventListener('click',e=>{
+    const fig = e.target.closest('figure');
+    if(!fig) return;
+    const list = LB.get(el) || [];
+    const item = list[Number(fig.dataset.idx)];
+    if(item) openLightbox(item);
+  });
+}
+
+/* ============ 技能 → 全屏详情弹窗 ============ */
+const skillModal = document.getElementById('skillModal');
+const sk = {
+  tag:document.getElementById('skTag'),
+  title:document.getElementById('skTitle'),
+  desc:document.getElementById('skDesc'),
+  grid:document.getElementById('skGrid')
+};
 function selectSkill(i){
-  const items = skillList.querySelectorAll('li');
-  items.forEach(el=>el.classList.remove('active'));
+  const s = SKILLS[i];
+  skillList.querySelectorAll('li').forEach(el=>el.classList.remove('active'));
   const active = skillList.querySelector(`li[data-index="${i}"]`);
   if(active) active.classList.add('active');
 
-  const s = SKILLS[i];
-  panel.classList.add('switching');
-  setTimeout(()=>{
-    panel.innerHTML = `
-      <p class="panel-tag">${s.en}</p>
-      <h3 class="panel-title">${s.title}</h3>
-      <p class="panel-desc">${s.desc}</p>
-      <div class="panel-grid">
-        ${s.images.map(im=>`
-          <figure>
-            <img src="${im.src}" alt="${im.cap}" loading="lazy">
-            <figcaption>${im.cap}<br><span style="letter-spacing:.3em;color:var(--ink-faint)">${im.sub}</span></figcaption>
-          </figure>`).join('')}
-      </div>`;
-    requestAnimationFrame(()=>panel.classList.remove('switching'));
-  },260);
+  sk.tag.textContent = s.en;
+  sk.title.textContent = s.title;
+  sk.desc.textContent = s.desc;
+  sk.grid.innerHTML = s.images.map((im,idx)=>`
+    <figure data-idx="${idx}">
+      <img src="${im.src}" alt="${im.cap}" loading="lazy">
+      <figcaption><i>${String(idx+1).padStart(2,'0')} — ${im.sub}</i>${im.cap}</figcaption>
+    </figure>`).join('');
+  LB.set(sk.grid, s.images);
+  sk.grid.scrollTop = 0;
+  skillModal.querySelector('.work-info').scrollTop = 0;
+  skillModal.classList.add('open');
+  lockBody(true);
 }
-selectSkill(0);
+function closeSkill(){
+  if(lightbox.classList.contains('open')) closeLightbox();
+  skillModal.classList.remove('open');
+  if(!anyModalOpen()) lockBody(false);
+}
+document.getElementById('closeSkill').addEventListener('click',closeSkill);
+skillModal.addEventListener('click',e=>{ if(e.target===skillModal) closeSkill(); });
+bindLightbox(sk.grid);
 
 /* ============ 作品详情弹窗 ============ */
 const workModal = document.getElementById('workModal');
@@ -749,20 +945,22 @@ function openProject(i){
     <li><span>Role</span><span>${p.role}</span></li>
     <li><span>Category</span><span>${p.en}</span></li>`;
   wm.gallery.innerHTML = `
-    <p class="gallery-tip">Hover images · Scroll ↓</p>
+    <p class="gallery-tip">Hover · Click to enlarge · Scroll ↓</p>
     ${p.gallery.map((g,idx)=>`
-      <figure>
+      <figure data-idx="${idx}">
         <img src="${g.src}" alt="${g.cap}" loading="lazy">
         <figcaption><i>${String(idx+1).padStart(2,'0')} — ${g.sub}</i>${g.cap}</figcaption>
       </figure>`).join('')}`;
+  LB.set(wm.gallery, p.gallery);
   wm.gallery.scrollTop = 0;
-  document.querySelector('.work-info').scrollTop = 0;
+  workModal.querySelector('.work-info').scrollTop = 0;
   workModal.classList.add('open');
-  document.body.classList.add('modal-lock');
+  lockBody(true);
 }
 function closeProject(){
+  if(lightbox.classList.contains('open')) closeLightbox();
   workModal.classList.remove('open');
-  if(!document.getElementById('modal').classList.contains('open')) document.body.classList.remove('modal-lock');
+  if(!anyModalOpen()) lockBody(false);
 }
 workGrid.addEventListener('click',e=>{
   const card = e.target.closest('.card');
@@ -774,20 +972,35 @@ workGrid.addEventListener('keydown',e=>{
 });
 document.getElementById('closeWork').addEventListener('click',closeProject);
 workModal.addEventListener('click',e=>{ if(e.target===workModal) closeProject(); });
+bindLightbox(wm.gallery);
+
+/* ============ 影像页 · 空间摄影缩略图 ============ */
+const photoGrid = document.getElementById('photoGrid');
+photoGrid.innerHTML = PHOTOS.map((ph,idx)=>`
+  <figure data-idx="${idx}">
+    <img src="${ph.src}" alt="${ph.cap}" loading="lazy">
+    <figcaption>${ph.cap}</figcaption>
+  </figure>`).join('');
+LB.set(photoGrid, PHOTOS);
+bindLightbox(photoGrid);
 
 /* ============ 版权弹窗 ============ */
 const copyrightModal = document.getElementById('modal');
-function openCopyright(){ copyrightModal.classList.add('open'); document.body.classList.add('modal-lock'); }
+function openCopyright(){ copyrightModal.classList.add('open'); lockBody(true); }
 function closeCopyright(){
   copyrightModal.classList.remove('open');
-  if(!workModal.classList.contains('open')) document.body.classList.remove('modal-lock');
+  if(!anyModalOpen()) lockBody(false);
 }
 document.getElementById('open-copyright').addEventListener('click',openCopyright);
 document.getElementById('close-copyright').addEventListener('click',closeCopyright);
 copyrightModal.addEventListener('click',e=>{ if(e.target===copyrightModal) closeCopyright(); });
+/* Esc 优先级：先关灯箱 → 再关当前弹窗 */
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape') return;
-  closeCopyright(); closeProject();
+  if(lightbox.classList.contains('open')){ closeLightbox(); return; }
+  if(workModal.classList.contains('open')){ closeProject(); return; }
+  if(skillModal.classList.contains('open')){ closeSkill(); return; }
+  closeCopyright();
 });
 
 /* ============ 滚动淡入 ============ */
