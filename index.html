@@ -418,6 +418,8 @@
     filter:brightness(.72) saturate(.55);
     transition:transform 1.3s cubic-bezier(.22,1,.36,1),filter .6s;
   }
+  /* 带 fit:'contain' 的图（如 27）：不裁切，完整画面居中显示 */
+  .work-gallery img.fit-contain{object-fit:contain;object-position:center;background:#000}
   .work-gallery figure:hover img{transform:scale(1.05);filter:brightness(.98) saturate(.7)}
   .work-gallery figcaption{
     position:absolute;left:0;right:0;bottom:0;padding:22px 24px;
@@ -634,7 +636,7 @@
       <ul class="skill-list" id="skillList"></ul>
     </div>
     <figure class="about-img reveal" data-delay="2">
-      <img src="images/38.jpg" alt="光影空间">
+      <img id="aboutImg" src="images/38.jpg" alt="光影空间">
       <span class="frame"></span>
       <figcaption>Light &amp; Space</figcaption>
     </figure>
@@ -762,136 +764,134 @@
    u(1) → images/1.jpg …… 想换图直接改这里的文件名即可 */
 const u = n => `images/${n}.jpg`;
 
-/* ========== 数据一：关于页 6 个技能（Tab） ==========
-   替换说明：title 标题 / desc 简介 / images 组图（src 图片、cap 说明、sub 英文小标） */
-const SKILLS = [
-  {
-    cn:'建模装置 / 三维渲染', en:'Modeling',
-    title:'空间装置与数字建构',
-    desc:'从概念草图到三维落地，完成装置的形态推演、材质测试与空间尺度校核，输出可直接交付施工的渲染图与技术图纸。',
-    images:[
-      {src:u(2), cap:'主装置体块推演', sub:'Concept Model', note:'确认了空间中最核心的视觉焦点。三组体块以不同高度悬垂，让观众的行走自然形成停顿节奏。'},
-      {src:u(3), cap:'空间尺度与人流动线', sub:'Scale Study', note:'以 1:50 的比例反复校核通道宽度，保证两人并行时不产生拥挤感。'},
-      {src:u(4), cap:'材质与光影测试', sub:'Material Test', note:'对比了五种板材的透光率，最终选择半透亚克力，让装置在暗场中自带微弱内发光。'},
-      {src:u(5), cap:'现场搭建实景', sub:'On Site', note:'两天搭建完成，实际效果与渲染图的误差控制在 3% 以内。'}
-    ]
-  },
-  {
-    cn:'海报 · 宣传册', en:'Graphic',
-    title:'视觉系统与平面物料',
-    desc:'建立统一的视觉识别系统：字体、栅格、图像处理方式一以贯之，覆盖海报、画册、导览手册与票务物料的完整编辑设计。',
-    images:[
-      {src:u(3), cap:'主视觉海报系列', sub:'Poster Series', note:'三款海报共用同一套轮廓语汇，通过留白比例区分主次，远看是一组，近看各有性格。'},
-      {src:u(4), cap:'宣传册版式设计', sub:'Brochure', note:'24 页的编辑逻辑：每四页一个呼吸节点，让图文密度始终保持可读。'},
-      {src:u(5), cap:'导览手册内页', sub:'Guidebook', note:'以 12 栏栅格承载导览信息，观众单手持有时也能顺畅阅读。'},
-      {src:u(1), cap:'物料延展与输出', sub:'Print', note:'选用 120g 本白纸与单色专色印刷，在控制成本的同时保留纸感。'}
-    ]
-  },
-  {
-    cn:'展会配套产品', en:'Product',
-    title:'展会配套产品',
-    desc:'围绕展览主题开发衍生品与功能物件，兼顾量产工艺与成本控制，让观众把展览记忆带回家。',
-    images:[
-      {src:u(4), cap:'衍生产品概念稿', sub:'Concept', note:'从门票、徽章到限定印刷品，统一在展览的色彩与材质语言之内。'},
-      {src:u(5), cap:'打样与工艺确认', sub:'Prototype', note:'打样三轮后确定表面处理工艺，单件成本压缩到预算线以内。'},
-      {src:u(1), cap:'成品陈列效果', sub:'Final', note:'成品与展陈空间保持同一材质逻辑，观众可以把展览记忆带回家。'}
-    ]
-  },
-  {
-    cn:'展厅触控 UI', en:'Interface',
-    title:'展厅触控交互界面',
-    desc:'为大屏与触摸终端设计信息架构与界面：低干扰的暗色 UI、清晰的层级、可远程维护的内容后台。',
-    images:[
-      {src:u(5), cap:'首页导航界面', sub:'Home', note:'暗色低干扰界面，入口控制在三个以内，观众三秒内即可做出选择。'},
-      {src:u(1), cap:'作品详情页', sub:'Detail', note:'大字号远距离可读性，站在两米外也能看清标题层级。'},
-      {src:u(2), cap:'时间轴导览', sub:'Timeline', note:'以横向时间轴串联展览线索，滑动手感按指尖尺度调校。'},
-      {src:u(3), cap:'现场触控终端', sub:'Kiosk', note:'按钮热区全部落在单手可达范围，并配有内容后台便于运营方自行替换。'}
-    ]
-  },
-  {
-    cn:'AI 短片', en:'Film',
-    title:'AI 影像短片',
-    desc:'以 AI 生成与实拍素材混合编排，完成分镜、节奏与配乐的整体把控，输出适配展厅大屏的循环版本。',
-    images:[
-      {src:u(1), cap:'分镜与镜头设计', sub:'Storyboard', note:'两分半的时长内完成一次完整的情绪起落，共 18 个镜头。'},
-      {src:u(2), cap:'生成画面调试', sub:'AI Frame', note:'生成画面与实拍素材交叉剪辑，统一压暗后保留颗粒感。'},
-      {src:u(3), cap:'大屏循环版本', sub:'Loop', note:'做了首尾无缝处理，可在展厅大屏上长时间循环播放。'}
-    ]
-  },
-  {
-    cn:'空间摄影', en:'Photography',
-    title:'空间纪实摄影',
-    desc:'记录布展过程与开展现场，用克制的镜头语言还原空间秩序，为展览留下可复用的档案影像。',
-    images:[
-      {src:u(2), cap:'布展过程记录', sub:'Process', note:'尽量不干预现场，用自然光记录装置被逐一组装的过程。'},
-      {src:u(3), cap:'开展现场纪实', sub:'Opening', note:'克制、冷静的镜头语言，还原空间原本的秩序感。'},
-      {src:u(4), cap:'空间细节特写', sub:'Detail', note:'聚焦于材料接缝与反光，这些细节在成品图中常被忽略。'},
-      {src:u(5), cap:'档案影像整理', sub:'Archive', note:'按时间、空间、物件三条线索归档，便于后续复用。'}
-    ]
-  }
+/* 批量生成一段连续的图片组：seq(14,19,'现场影像') → 14…19 共 6 张 */
+const seq = (from,to,label) => Array.from({length:to-from+1},(_,k)=>({
+  src: u(from+k),
+  cap: `${label} ${String(k+1).padStart(2,'0')}`,
+  sub: 'Sequence',
+  note: '展览现场影像记录。'
+}));
+
+/* =====================================================================
+   图片数据总表 —— 每个页面 / 模块各占一份，互不共享、互不影响
+   ---------------------------------------------------------------------
+   IMG_HERO            首屏整幅背景
+   IMG_ABOUT           关于页右侧大图
+   IMG_BAND            影像区块的播放器底图
+   IMG_TAB_1 … 6       关于页 6 个技能 Tab 的组图
+   IMG_WORK_1 … 4      首页 4 个项目的弹窗画廊（右侧）
+                       其中 IMG_WORK_4 的每一项可带 shots，指定「点它之后」的那组图
+   IMG_PHOTOS          影像页缩略图
+   改哪个页面就只改对应这一份，不会牵动其它页面。
+   ===================================================================== */
+const IMG_HERO  = u(1);
+const IMG_ABOUT = u(38);
+const IMG_BAND  = u(5);
+
+/* --- 关于页 · Tab 1 建模装置 / 三维渲染 --- */
+const IMG_TAB_1 = [
+  {src:u(2), cap:'主装置体块推演', sub:'Concept Model', note:'确认了空间中最核心的视觉焦点。三组体块以不同高度悬垂，让观众的行走自然形成停顿节奏。'},
+  {src:u(3), cap:'空间尺度与人流动线', sub:'Scale Study', note:'以 1:50 的比例反复校核通道宽度，保证两人并行时不产生拥挤感。'},
+  {src:u(4), cap:'材质与光影测试', sub:'Material Test', note:'对比了五种板材的透光率，最终选择半透亚克力，让装置在暗场中自带微弱内发光。'},
+  {src:u(5), cap:'现场搭建实景', sub:'On Site', note:'两天搭建完成，实际效果与渲染图的误差控制在 3% 以内。'}
 ];
 
-/* ========== 数据二：展厅专页 4 个项目（点击弹窗） ==========
-   替换说明：long 为弹窗中的长介绍，facts 为右侧信息条，gallery 为可上下滑动的组图 */
-const PROJECTS = [
-  {
-    num:'I.', tag:'01 / 04', core:true, cover:u(1),
-    title:'空间装置与数字建构', en:'Installation', year:'2024 — 01', role:'概念 · 建模 · 渲染',
-    desc:'装置概念 · 空间推演 · 渲染表现',
-    long:'这是整部作品集中的核心项目。展览以“光的容器”为题，在一个不足 120 平方米的临时空间中，用三组体量不同的悬挂装置重构观众的行走节奏。\n\n设计从手绘草图开始，先在三维空间里反复推演体块关系与人流动线，再通过材质小样确认透光率与反射强度。最终交付物包含完整的效果图、节点大样图与现场施工说明，确保装置在有限的搭建周期内精确落地。',
-    gallery:[
-      {src:u(1), cap:'主装置体块推演', sub:'Concept Model', note:'确认了空间中最核心的视觉焦点，三组体块以不同高度悬垂。'},
-      {src:u(2), cap:'空间尺度与人流动线校核', sub:'Scale & Circulation', note:'以 1:50 比例校核通道宽度，保证两人并行时不产生拥挤感。'},
-      {src:u(3), cap:'材质透光与光影测试', sub:'Material Test', note:'五种板材透光率对比后选定半透亚克力，暗场中自带微弱内发光。'},
-      {src:u(4), cap:'现场搭建完成后实景', sub:'On Site', note:'两天搭建完成，实际效果与渲染图误差控制在 3% 以内。'}
-    ]
-  },
-  {
-    num:'II.', tag:'02 / 04', core:false, cover:u(2),
-    title:'视觉系统与平面物料', en:'Graphic', year:'2024 — 03', role:'平面 · 编辑设计',
-    desc:'海报系统 · 宣传册编辑设计',
-    long:'为同一展览建立的完整平面系统。以一套统一的字体层级与栅格贯穿所有物料，让海报、宣传册与现场导视保持同一种语气。\n\n海报系列采用大幅留白与极窄字距，主视觉从装置本体的轮廓中抽取语汇；宣传册则以 24 页的编辑逻辑梳理策展文本、图像与图注的信息密度，兼顾阅读节奏与印刷成本。',
-    gallery:[
-      {src:u(2), cap:'主视觉海报系列（共 3 款）', sub:'Poster Series', note:'三款共用同一套轮廓语汇，靠留白比例区分主次，远看是一组，近看各有性格。'},
-      {src:u(3), cap:'宣传册跨页版式', sub:'Brochure Spread', note:'24 页的编辑逻辑：每四页一个呼吸节点，图文密度始终保持可读。'},
-      {src:u(4), cap:'导览手册内页栅格', sub:'Guidebook Grid', note:'12 栏栅格承载导览信息，单手持有时也能顺畅阅读。'},
-      {src:u(5), cap:'印刷样品与物料延展', sub:'Print & Merch', note:'120g 本白纸与单色专色印刷，控制成本的同时保留纸感。'}
-    ]
-  },
-  {
-    num:'III.', tag:'03 / 04', core:false, cover:u(3),
-    title:'交互终端与数字界面', en:'Product / UI', year:'2023 — 11', role:'产品 · 交互设计',
-    desc:'衍生产品 · 交互界面 · 导览体验',
-    long:'涵盖两条并行的线索：一是展会的配套产品，二是现场的触控交互界面。\n\n产品部分从门票、徽章到限定印刷品，统一在展览的色彩与材质语言内，并充分考虑量产工艺与单件成本。UI 部分则针对展厅环境做了专门适配——暗色低干扰界面、大字号远距离可读性、单手可达的按钮热区，同时提供便于运营方自行替换的内容后台。',
-    gallery:[
-      {src:u(3), cap:'衍生产品概念与阵列', sub:'Product Line', note:'从门票、徽章到限定印刷品，统一在展览的色彩与材质语言之内。'},
-      {src:u(4), cap:'打样与工艺确认', sub:'Prototype', note:'打样三轮后确定表面处理工艺，单件成本压缩到预算线以内。'},
-      {src:u(5), cap:'触控终端首页界面', sub:'UI — Home', note:'入口控制在三个以内，观众三秒内即可做出选择。'},
-      {src:u(1), cap:'现场大屏交互实景', sub:'Kiosk', note:'按钮热区落在单手可达范围，并配备内容后台便于自行替换。'}
-    ]
-  },
-  {
-    num:'IV.', tag:'04 / 04', core:false, cover:u(4),
-    title:'空间影像与纪实记录', en:'Film / Photo', year:'2023 — 09', role:'影像 · 摄影',
-    desc:'大屏循环影像 · 空间纪录',
-    long:'影像部分包含一支用于展厅大屏循环播放的短片，以及一组完整的空间纪实摄影。\n\n短片以 AI 生成的画面与实拍素材交叉编排，在两分半的时长内完成一次完整的情绪起落，并做了无缝循环的版本处理。摄影则聚焦于布展过程与开展当日：克制、冷静、尽量不干预现场，为展览留下可长期复用的档案素材。',
-    /* 点开右侧任意图片 → 第三层全屏预览，可左右切换（← → / 箭头 / 拖拽） */
-    gallery:[
-      {src:u(27), cap:'大屏循环影像（静帧）', sub:'Film Still', note:'两分半的短片共 18 个镜头，在展厅大屏上无缝循环。'},
-      {src:u(29), cap:'影像中段 · 快切段落', sub:'Sequence', note:'中段用六个快切镜头交代人流与空间的关系，是全片节奏最快的部分。'},
-      {src:u(10), cap:'空间纪实 · 夜场', sub:'Night', note:'开展首日夜场，现场只保留装置自身的照明。'},
-      {src:u(14), cap:'布展过程纪实', sub:'Process', note:'尽量不干预现场，用自然光记录装置被逐一组装的过程。'},
-      {src:u(15), cap:'空间细节特写', sub:'Detail', note:'聚焦材料接缝与反光，这些细节在成品图中常被忽略。'},
-      {src:u(16), cap:'观众动线', sub:'Circulation', note:'观众在装置之间的行走路径，与设计预演的动线基本吻合。'},
-      {src:u(17), cap:'开展现场', sub:'Opening', note:'克制、冷静的镜头语言，还原空间原本的秩序感。'},
-      {src:u(18), cap:'撤展前 · 空场', sub:'Empty', note:'撤展前拍下的空场，空间重新回到最初的安静状态。'}
-    ]
-  }
+/* --- 关于页 · Tab 2 海报 / 宣传册 --- */
+const IMG_TAB_2 = [
+  {src:u(3), cap:'主视觉海报系列', sub:'Poster Series', note:'三款海报共用同一套轮廓语汇，通过留白比例区分主次，远看是一组，近看各有性格。'},
+  {src:u(4), cap:'宣传册版式设计', sub:'Brochure', note:'24 页的编辑逻辑：每四页一个呼吸节点，让图文密度始终保持可读。'},
+  {src:u(5), cap:'导览手册内页', sub:'Guidebook', note:'以 12 栏栅格承载导览信息，观众单手持有时也能顺畅阅读。'},
+  {src:u(1), cap:'物料延展与输出', sub:'Print', note:'选用 120g 本白纸与单色专色印刷，在控制成本的同时保留纸感。'}
 ];
 
-/* ========== 数据三：影像页空间摄影缩略图（images/4、5 循环占位） ==========
-   替换说明：src 图片 / cap 图注 / sub 英文小标 / note 灯箱里的专属介绍 */
-const PHOTOS = [
+/* --- 关于页 · Tab 3 展会配套产品 --- */
+const IMG_TAB_3 = [
+  {src:u(4), cap:'衍生产品概念稿', sub:'Concept', note:'从门票、徽章到限定印刷品，统一在展览的色彩与材质语言之内。'},
+  {src:u(5), cap:'打样与工艺确认', sub:'Prototype', note:'打样三轮后确定表面处理工艺，单件成本压缩到预算线以内。'},
+  {src:u(1), cap:'成品陈列效果', sub:'Final', note:'成品与展陈空间保持同一材质逻辑，观众可以把展览记忆带回家。'}
+];
+
+/* --- 关于页 · Tab 4 展厅触控 UI --- */
+const IMG_TAB_4 = [
+  {src:u(5), cap:'首页导航界面', sub:'Home', note:'暗色低干扰界面，入口控制在三个以内，观众三秒内即可做出选择。'},
+  {src:u(1), cap:'作品详情页', sub:'Detail', note:'大字号远距离可读性，站在两米外也能看清标题层级。'},
+  {src:u(2), cap:'时间轴导览', sub:'Timeline', note:'以横向时间轴串联展览线索，滑动手感按指尖尺度调校。'},
+  {src:u(3), cap:'现场触控终端', sub:'Kiosk', note:'按钮热区全部落在单手可达范围，并配有内容后台便于运营方自行替换。'}
+];
+
+/* --- 关于页 · Tab 5 AI 短片 --- */
+const IMG_TAB_5 = [
+  {src:u(1), cap:'分镜与镜头设计', sub:'Storyboard', note:'两分半的时长内完成一次完整的情绪起落，共 18 个镜头。'},
+  {src:u(2), cap:'生成画面调试', sub:'AI Frame', note:'生成画面与实拍素材交叉剪辑，统一压暗后保留颗粒感。'},
+  {src:u(3), cap:'大屏循环版本', sub:'Loop', note:'做了首尾无缝处理，可在展厅大屏上长时间循环播放。'}
+];
+
+/* --- 关于页 · Tab 6 空间摄影 --- */
+const IMG_TAB_6 = [
+  {src:u(2), cap:'布展过程记录', sub:'Process', note:'尽量不干预现场，用自然光记录装置被逐一组装的过程。'},
+  {src:u(3), cap:'开展现场纪实', sub:'Opening', note:'克制、冷静的镜头语言，还原空间原本的秩序感。'},
+  {src:u(4), cap:'空间细节特写', sub:'Detail', note:'聚焦于材料接缝与反光，这些细节在成品图中常被忽略。'},
+  {src:u(5), cap:'档案影像整理', sub:'Archive', note:'按时间、空间、物件三条线索归档，便于后续复用。'}
+];
+
+/* --- 首页 · 项目 I 弹窗画廊 --- */
+const IMG_WORK_1 = [
+  {src:u(1), cap:'主装置体块推演', sub:'Concept Model', note:'确认了空间中最核心的视觉焦点，三组体块以不同高度悬垂。'},
+  {src:u(2), cap:'空间尺度与人流动线校核', sub:'Scale & Circulation', note:'以 1:50 比例校核通道宽度，保证两人并行时不产生拥挤感。'},
+  {src:u(3), cap:'材质透光与光影测试', sub:'Material Test', note:'五种板材透光率对比后选定半透亚克力，暗场中自带微弱内发光。'},
+  {src:u(4), cap:'现场搭建完成后实景', sub:'On Site', note:'两天搭建完成，实际效果与渲染图误差控制在 3% 以内。'}
+];
+
+/* --- 首页 · 项目 II 弹窗画廊（右侧） ---
+   右侧 3 张，各自点进去的图组都不同：
+   33 → 31–37 ｜ 12 → 12–13 ｜ 39 → 39–43 */
+const IMG_WORK_2 = [
+  {src:u(33), cap:'视觉系统总览',   sub:'Visual System', note:'海报、宣传册与导览物料的统一视觉系统总览。', shots: seq(31,37,'视觉系统')},
+  {src:u(12), cap:'海报版面细节',   sub:'Poster Detail', note:'海报系列的版面与字距细节。',                   shots: seq(12,13,'海报细节')},
+  {src:u(39), cap:'物料与输出实拍', sub:'Print & Merch', note:'印刷成品与现场物料的实物记录。',               shots: seq(39,43,'物料实拍')}
+];
+
+/* --- 首页 · 项目 III 弹窗画廊 --- */
+const IMG_WORK_3 = [
+  {src:u(3), cap:'衍生产品概念与阵列', sub:'Product Line', note:'从门票、徽章到限定印刷品，统一在展览的色彩与材质语言之内。'},
+  {src:u(4), cap:'打样与工艺确认', sub:'Prototype', note:'打样三轮后确定表面处理工艺，单件成本压缩到预算线以内。'},
+  {src:u(5), cap:'触控终端首页界面', sub:'UI — Home', note:'入口控制在三个以内，观众三秒内即可做出选择。'},
+  {src:u(1), cap:'现场大屏交互实景', sub:'Kiosk', note:'按钮热区落在单手可达范围，并配备内容后台便于自行替换。'}
+];
+
+/* --- 首页 · 项目 IV 弹窗画廊（右侧） ---
+   每张缩略图都用 shots 指定「点进去之后」的那一组图，互不相同：
+   18 → 14–19 ｜ 20 → 20–25 ｜ 26 → 26–28 ｜ 29 → 29–30 ｜ 7 → 1–11 */
+const IMG_WORK_4 = [
+  {src:u(18), cap:'现场影像记录', sub:'Scene',       note:'展览现场的空间与光影状态记录。',        shots: seq(14,19,'现场影像记录')},
+  {src:u(20), cap:'空间纪实',     sub:'Document',    note:'以克制的镜头语言记录空间与观众的互动。', shots: seq(20,25,'空间纪实')},
+  {src:u(26), cap:'影像静帧',     sub:'Film Still',  note:'展厅大屏循环影像的静帧画面。',           shots: seq(26,28,'影像静帧')},
+  {src:u(29), cap:'动线与观众',   sub:'Circulation', note:'观众在空间中的行走路径与停留节点。',     shots: seq(29,30,'动线与观众')},
+  {src:u(7),  cap:'空间光影细节', sub:'Detail',      note:'记录空间中光影变化与材质的互动。',       shots: seq(1,11,'空间光影')}
+];
+
+/* =====================================================================
+   作品 → 图片组 的对应关系表
+   ---------------------------------------------------------------------
+   键（key）= 作品的 data-id，卡片、封面图、弹窗右侧会用到同一个 id
+       scene01    I.  空间装置与数字建构
+       graphic01  II. 视觉系统与平面物料
+       product01  III.交互终端与数字界面
+       film01     IV. 空间影像与纪实记录
+   值（value）= 该作品的图片组；点击时按 id 从这张表里取，不再共用同一组图。
+   ===================================================================== */
+const galleryData = {
+  scene01  : IMG_WORK_1,        // 弹窗右侧画廊
+  graphic01: IMG_WORK_2,
+  product01: IMG_WORK_3,
+  film01   : IMG_WORK_4
+};
+
+/* 点进去的全屏预览：优先用被点那张图自己的 shots（见 IMG_WORK_4），
+   没配 shots 的作品则退回到 galleryData 里那一整组 */
+
+/* --- 影像页 · 空间摄影缩略图 --- */
+const IMG_PHOTOS = [
   {src:u(4), cap:'展厅入口 · 夜场', sub:'Entrance', note:'夜场时入口只留一盏低位灯，把观众从街道的亮度缓慢过渡到展厅的暗。'},
   {src:u(5), cap:'主展区 · 光井', sub:'Light Well', note:'顶部的方形光井是唯一的自然光源，随时间在地面画出一条移动的光带。'},
   {src:u(4), cap:'装置细节 · 接缝', sub:'Joint', note:'刻意保留的接缝痕迹，让装置看起来像是被使用过，而非刚出厂。'},
@@ -900,12 +900,92 @@ const PHOTOS = [
   {src:u(5), cap:'撤展前 · 空场', sub:'Empty', note:'撤展前拍下的空场，空间重新回到最初的安静状态。'}
 ];
 
+/* ========== 数据一：关于页 6 个技能（Tab） ==========
+   替换说明：title 标题 / desc 简介 / images 组图（src 图片、cap 说明、sub 英文小标） */
+const SKILLS = [
+  {
+    cn:'建模装置 / 三维渲染', en:'Modeling',
+    title:'空间装置与数字建构',
+    desc:'从概念草图到三维落地，完成装置的形态推演、材质测试与空间尺度校核，输出可直接交付施工的渲染图与技术图纸。',
+    images: IMG_TAB_1          /* 图在数据区 IMG_TAB_1 */
+  },
+  {
+    cn:'海报 · 宣传册', en:'Graphic',
+    title:'视觉系统与平面物料',
+    desc:'建立统一的视觉识别系统：字体、栅格、图像处理方式一以贯之，覆盖海报、画册、导览手册与票务物料的完整编辑设计。',
+    images: IMG_TAB_2          /* 图在数据区 IMG_TAB_2 */
+  },
+  {
+    cn:'展会配套产品', en:'Product',
+    title:'展会配套产品',
+    desc:'围绕展览主题开发衍生品与功能物件，兼顾量产工艺与成本控制，让观众把展览记忆带回家。',
+    images: IMG_TAB_3          /* 图在数据区 IMG_TAB_3 */
+  },
+  {
+    cn:'展厅触控 UI', en:'Interface',
+    title:'展厅触控交互界面',
+    desc:'为大屏与触摸终端设计信息架构与界面：低干扰的暗色 UI、清晰的层级、可远程维护的内容后台。',
+    images: IMG_TAB_4          /* 图在数据区 IMG_TAB_4 */
+  },
+  {
+    cn:'AI 短片', en:'Film',
+    title:'AI 影像短片',
+    desc:'以 AI 生成与实拍素材混合编排，完成分镜、节奏与配乐的整体把控，输出适配展厅大屏的循环版本。',
+    images: IMG_TAB_5          /* 图在数据区 IMG_TAB_5 */
+  },
+  {
+    cn:'空间摄影', en:'Photography',
+    title:'空间纪实摄影',
+    desc:'记录布展过程与开展现场，用克制的镜头语言还原空间秩序，为展览留下可复用的档案影像。',
+    images: IMG_TAB_6          /* 图在数据区 IMG_TAB_6 */
+  }
+];
+
+/* ========== 数据二：展厅专页 4 个项目（点击弹窗） ==========
+   替换说明：id 为作品专属标识（封面 data-id），图片不写在这里，
+   统一由上面的 galleryData 按 id 取；long 为长介绍 */
+const PROJECTS = [
+  {
+    num:'I.', tag:'01 / 04', core:true, cover:u(1),
+    title:'空间装置与数字建构', en:'Installation', year:'2024 — 01', role:'概念 · 建模 · 渲染',
+    desc:'装置概念 · 空间推演 · 渲染表现',
+    long:'这是整部作品集中的核心项目。展览以“光的容器”为题，在一个不足 120 平方米的临时空间中，用三组体量不同的悬挂装置重构观众的行走节奏。\n\n设计从手绘草图开始，先在三维空间里反复推演体块关系与人流动线，再通过材质小样确认透光率与反射强度。最终交付物包含完整的效果图、节点大样图与现场施工说明，确保装置在有限的搭建周期内精确落地。',
+    id:'scene01',              /* 作品 id → galleryData.scene01 */
+  },
+  {
+    num:'II.', tag:'02 / 04', core:false, cover:u(2),
+    title:'视觉系统与平面物料', en:'Graphic', year:'2024 — 03', role:'平面 · 编辑设计',
+    desc:'海报系统 · 宣传册编辑设计',
+    long:'为同一展览建立的完整平面系统。以一套统一的字体层级与栅格贯穿所有物料，让海报、宣传册与现场导视保持同一种语气。\n\n海报系列采用大幅留白与极窄字距，主视觉从装置本体的轮廓中抽取语汇；宣传册则以 24 页的编辑逻辑梳理策展文本、图像与图注的信息密度，兼顾阅读节奏与印刷成本。',
+    id:'graphic01',            /* 作品 id → galleryData.graphic01 */
+  },
+  {
+    num:'III.', tag:'03 / 04', core:false, cover:u(3),
+    title:'交互终端与数字界面', en:'Product / UI', year:'2023 — 11', role:'产品 · 交互设计',
+    desc:'衍生产品 · 交互界面 · 导览体验',
+    long:'涵盖两条并行的线索：一是展会的配套产品，二是现场的触控交互界面。\n\n产品部分从门票、徽章到限定印刷品，统一在展览的色彩与材质语言内，并充分考虑量产工艺与单件成本。UI 部分则针对展厅环境做了专门适配——暗色低干扰界面、大字号远距离可读性、单手可达的按钮热区，同时提供便于运营方自行替换的内容后台。',
+    id:'product01',            /* 作品 id → galleryData.product01 */
+  },
+  {
+    num:'IV.', tag:'04 / 04', core:false, cover:u(4),
+    title:'空间影像与纪实记录', en:'Film / Photo', year:'2023 — 09', role:'影像 · 摄影',
+    desc:'大屏循环影像 · 空间纪录',
+    long:'影像部分包含一支用于展厅大屏循环播放的短片，以及一组完整的空间纪实摄影。\n\n短片以 AI 生成的画面与实拍素材交叉编排，在两分半的时长内完成一次完整的情绪起落，并做了无缝循环的版本处理。摄影则聚焦于布展过程与开展当日：克制、冷静、尽量不干预现场，为展览留下可长期复用的档案素材。',
+    /* 弹窗右侧 → galleryData.film01；点进去的预览 → 该项自带的 shots */
+    id:'film01'
+  }
+];
+
+/* ========== 数据三：影像页空间摄影缩略图 ==========
+   图片本身在数据区 IMG_PHOTOS，改那里即可 */
+const PHOTOS = IMG_PHOTOS;
+
 /* ================= 渲染：展厅专页卡片 ================= */
 const workGrid = document.getElementById('workGrid');
 workGrid.innerHTML = PROJECTS.map((p,i)=>`
-  <article class="card reveal" data-index="${i}" tabindex="0" role="button" aria-label="查看详情：${p.title}">
-    <div class="card-img">
-      <img src="${p.cover}" alt="${p.title}" loading="lazy">
+  <article class="card reveal" data-index="${i}" data-id="${p.id}" tabindex="0" role="button" aria-label="查看详情：${p.title}">
+    <div class="card-img" data-id="${p.id}">
+      <img src="${p.cover}" alt="${p.title}" loading="lazy" data-id="${p.id}">
       ${p.core ? '<span class="card-tag core">核心项目</span>' : `<span class="card-tag">${p.tag}</span>`}
       <span class="view-hint">View Project</span>
     </div>
@@ -1067,7 +1147,24 @@ function bindLightbox(el){
     if(!fig) return;
     const list = LB.get(el) || [];
     const idx = Number(fig.dataset.idx);
-    if(list[idx]) openLightbox(list, idx);
+    const item = list[idx];
+
+    /* 这张图带自己的 shots：点它就用它专属的那一组，从第 1 张开始 */
+    if(item && Array.isArray(item.shots) && item.shots.length){
+      openLightbox(item.shots, 0);
+      return;
+    }
+
+    /* 没有 shots：沿用容器那一组，优先按图片地址定位，找不到再按序号 */
+    const img = fig.querySelector('img');
+    const thumbSrc = img ? img.getAttribute('src') : null;
+    let at = idx;
+    if(thumbSrc){
+      const found = list.findIndex(it => it.src === thumbSrc);
+      if(found >= 0) at = found;
+    }
+    if(!list[at]) at = 0;
+    if(list[at]) openLightbox(list, at);
   });
 }
 
@@ -1117,8 +1214,13 @@ const wm = {
   facts:document.getElementById('wmFacts'),
   gallery:document.getElementById('wmGallery')
 };
-function openProject(i){
-  const p = PROJECTS[i];
+/* 支持传作品 id（'scene01'）或数组下标；内部统一按 id 到 galleryData 取图 */
+function openProject(ref){
+  const i = typeof ref === 'string' ? PROJECTS.findIndex(x=>x.id===ref) : Number(ref);
+  const p = PROJECTS[i] || PROJECTS[0];
+  const id = p.id;
+  const group = galleryData[id] || [];
+
   wm.tag.textContent = `${p.tag} — ${p.en}`;
   wm.title.textContent = p.title;
   wm.desc.innerHTML = p.long.split('\n\n').map(t=>`<p style="margin-bottom:18px">${t}</p>`).join('');
@@ -1126,14 +1228,16 @@ function openProject(i){
     <li><span>Year</span><span>${p.year}</span></li>
     <li><span>Role</span><span>${p.role}</span></li>
     <li><span>Category</span><span>${p.en}</span></li>`;
+  wm.gallery.dataset.id = id;      // 弹窗画廊记住当前作品 id
   wm.gallery.innerHTML = `
     <p class="gallery-tip">Hover · Click to enlarge · Scroll ↓</p>
-    ${p.gallery.map((g,idx)=>`
-      <figure data-idx="${idx}">
-        <img src="${g.src}" alt="${g.cap}" loading="lazy">
+    ${group.map((g,idx)=>`
+      <figure data-idx="${idx}" data-id="${id}">
+        <img src="${g.src}" alt="${g.cap}" loading="lazy" class="${g.fit === 'contain' ? 'fit-contain' : ''}">
         <figcaption><i>${String(idx+1).padStart(2,'0')} — ${g.sub}</i>${g.cap}</figcaption>
       </figure>`).join('')}`;
-  LB.set(wm.gallery, p.gallery);
+  /* 右侧画廊用 galleryData[id]；点进去时再按被点的那张图取它自己的 shots */
+  LB.set(wm.gallery, group);
   wm.gallery.scrollTop = 0;
   workModal.querySelector('.work-info').scrollTop = 0;
   workModal.classList.add('open');
@@ -1144,13 +1248,24 @@ function closeProject(){
   workModal.classList.remove('open');
   if(!anyModalOpen()) lockBody(false);
 }
+/* 点击时先读被点区域的 data-id，再据此到 galleryData 取那一组图 */
+function pickWorkId(target){
+  const zone = target.closest('[data-id]');     // 封面图 / 图框 / 卡片都带 data-id
+  const card = target.closest('.card');
+  if(!card) return null;
+  return (zone && zone.dataset.id) || card.dataset.id || null;
+}
 workGrid.addEventListener('click',e=>{
+  const id = pickWorkId(e.target);
   const card = e.target.closest('.card');
-  if(card) openProject(Number(card.dataset.index));
+  if(card) openProject(id || Number(card.dataset.index));
 });
 workGrid.addEventListener('keydown',e=>{
   const card = e.target.closest('.card');
-  if(card && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); openProject(Number(card.dataset.index)); }
+  if(card && (e.key==='Enter'||e.key===' ')){
+    e.preventDefault();
+    openProject(card.dataset.id || Number(card.dataset.index));
+  }
 });
 
 document.getElementById('closeWork').addEventListener('click',closeProject);
@@ -1185,6 +1300,18 @@ document.addEventListener('keydown',e=>{
   if(skillModal.classList.contains('open')){ closeSkill(); return; }
   closeCopyright();
 });
+
+/* ============ 单图页面：把数据区里的图写进页面 ============ */
+(function bindSingleImages(){
+  const heroBg = document.querySelector('.hero-bg');
+  if(heroBg && IMG_HERO) heroBg.style.backgroundImage = `url("${IMG_HERO}")`;
+
+  const aboutImg = document.getElementById('aboutImg');
+  if(aboutImg && IMG_ABOUT) aboutImg.src = IMG_ABOUT;
+
+  const player = document.querySelector('.player');
+  if(player && IMG_BAND) player.style.backgroundImage = `url("${IMG_BAND}")`;
+})();
 
 /* ============ 滚动淡入 ============ */
 const io = new IntersectionObserver((entries)=>{
